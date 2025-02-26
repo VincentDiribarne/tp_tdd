@@ -1,6 +1,5 @@
 package com.vd.tp.model;
 
-import com.vd.tp.model.enums.Format;
 import jakarta.persistence.Entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
