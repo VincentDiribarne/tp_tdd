@@ -9,6 +9,8 @@ import com.vd.tp.validator.ISBNValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class BookService {
@@ -16,6 +18,10 @@ public class BookService {
 
     public Book findBookByISBN(String isbn) {
         return repository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Book with isbn '" + isbn + "' not found"));
+    }
+
+    public List<Book> findBookByTitleContaining(String title) {
+        return repository.findBooksByTitleContaining(title);
     }
 
     public Book addBook(Book book) {

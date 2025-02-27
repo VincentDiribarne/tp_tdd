@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -63,6 +64,64 @@ public class BookServiceTest {
         // Assert
         assertThrows(NotFoundException.class, () -> service.findBookByISBN("978-1917067287"));
     }
+
+    /* Title */
+    @Test
+    public void shouldFindOneBookByLikeTitle() {
+        //Given
+        Book book = new Book("978-1917067287", "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", "Nielsen UK", Format.ROMAN, true);
+
+        //Should
+        when(repository.findBooksByTitleContaining(anyString())).thenReturn(List.of(book));
+
+        List<Book> foundBooks = service.findBookByTitleContaining("Sherlock");
+
+        // Assert
+
+        assertNotNull(foundBooks.getFirst());
+        assertEquals("The Adventures of Sherlock Holmes", foundBooks.getFirst().getTitle());
+
+        verify(repository, times(1)).findBooksByTitleContaining("Sherlock");
+    }
+
+    @Test
+    public void shouldFindBooksByLikeTitle() {
+        //Given
+        Book book = new Book("978-1917067287", "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", "Nielsen UK", Format.ROMAN, true);
+        Book secondBook = new Book("979-8301506079", "Sherlock Holmes et les vacances précipitées", "Mabel Swift", "Independently published", Format.ROMAN, true);
+
+        //Should
+        when(repository.findBooksByTitleContaining(anyString())).thenReturn(List.of(book, secondBook));
+
+        List<Book> foundBooks = service.findBookByTitleContaining("Sherlock");
+
+        // Assert
+        assertNotNull(foundBooks.getFirst());
+        assertEquals("The Adventures of Sherlock Holmes", foundBooks.getFirst().getTitle());
+
+        assertNotNull(foundBooks.get(1));
+        assertEquals("Sherlock Holmes et les vacances précipitées", foundBooks.get(1).getTitle());
+
+        verify(repository, times(1)).findBooksByTitleContaining("Sherlock");
+    }
+
+    @Test
+    public void shouldNotFindBooksByLikeTitle() {
+        //Given
+
+        //Should
+        when(repository.findBooksByTitleContaining(anyString())).thenReturn(List.of());
+
+        List<Book> foundBooks = service.findBookByTitleContaining("Sherlock");
+
+        // Assert
+        assertTrue(foundBooks.isEmpty());
+
+        verify(repository, times(1)).findBooksByTitleContaining("Sherlock");
+    }
+
+    /* Author */
+
 
 
     /* ADD */
@@ -117,7 +176,7 @@ public class BookServiceTest {
     }
 
     @Test
-    public void shouldNotAddBookWithoutGoodISBN() {
+    public void shouldNotAddBookWithoutBadISBN() {
         Book book = new Book("978-1941797544", "The Adventures of Sherlock Holmes", "Arthur Conan Doyle", "Nielsen UK", Format.ROMAN, true);
 
         // Assert
