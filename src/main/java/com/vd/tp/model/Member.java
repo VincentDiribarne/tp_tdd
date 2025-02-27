@@ -14,7 +14,10 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Member extends Person {
+public class Member extends PersistentEntity {
+    private String firstName;
+    private String lastName;
+
     private String memberCode;
 
     private LocalDate birthDate;
