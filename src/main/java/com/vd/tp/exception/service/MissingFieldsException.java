@@ -1,4 +1,4 @@
-package com.vd.tp.exception.validator;
+package com.vd.tp.exception.service;
 
 public class MissingFieldsException extends RuntimeException {
     public MissingFieldsException(String message) {

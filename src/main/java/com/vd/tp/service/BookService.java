@@ -1,8 +1,11 @@
 package com.vd.tp.service;
 
-import com.vd.tp.exception.validator.MissingFieldsException;
+import com.vd.tp.exception.service.BadArgumentException;
+import com.vd.tp.exception.service.MissingFieldsException;
+import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Book;
 import com.vd.tp.repository.BookRepository;
+import com.vd.tp.validator.ISBNValidator;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -11,11 +14,19 @@ import org.springframework.stereotype.Service;
 public class BookService {
     private final BookRepository repository;
 
+    public Book findBookByISBN(String isbn) {
+        return repository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Book with isbn '" + isbn + "' not found"));
+    }
+
     public Book addBook(Book book) {
         missingFields(book);
+        ISBNValidator isbnValidator = new ISBNValidator();
+
+        if (!isbnValidator.validate(book.getIsbn())) throw new BadArgumentException("Invalid ISBN");
 
         return repository.save(book);
     }
+
 
     public Book saveBook(Book book) {
         return repository.save(book);
