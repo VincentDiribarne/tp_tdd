@@ -41,4 +41,22 @@ public class ISBNValidatorTest {
 
         assertFalse(result);
     }
+
+    @Test
+    public void shouldIsbnInvalidTooShort() {
+        ISBNValidator isbnValidator = new ISBNValidator();
+
+        boolean result = isbnValidator.validate("9781917068");
+
+        assertFalse(result);
+    }
+
+    @Test
+    public void shouldIsbnInvalidTooLong() {
+        ISBNValidator isbnValidator = new ISBNValidator();
+
+        boolean result = isbnValidator.validate("97819170672888");
+
+        assertFalse(result);
+    }
 }

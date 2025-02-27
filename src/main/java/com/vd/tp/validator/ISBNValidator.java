@@ -8,6 +8,9 @@ public class ISBNValidator {
             isbn = isbn.replace("-", "");
         }
 
+        if (isbn.length() != 13) return false;
+
+
         for (int i = 0; i < isbn.length(); i++) {
             char c = isbn.charAt(i);
 
