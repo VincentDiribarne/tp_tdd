@@ -1,10 +1,8 @@
 package com.vd.tp.model.enums;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
 @Getter
-@RequiredArgsConstructor
 public enum Format {
     PAPERBACK("Livre de poche"),
     HARDCOVER("Livre relié"),
@@ -13,4 +11,8 @@ public enum Format {
     ROMAN("Roman");
 
     private final String name;
+
+    Format(String name) {
+        this.name = name;
+    }
 }
