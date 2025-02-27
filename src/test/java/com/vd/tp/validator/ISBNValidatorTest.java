@@ -1,9 +1,10 @@
 package com.vd.tp.validator;
 
+import com.vd.tp.exception.FormatException;
+import com.vd.tp.exception.LengthException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ISBNValidatorTest {
     @Test
@@ -46,17 +47,20 @@ public class ISBNValidatorTest {
     public void shouldIsbnInvalidTooShort() {
         ISBNValidator isbnValidator = new ISBNValidator();
 
-        boolean result = isbnValidator.validate("9781917068");
-
-        assertFalse(result);
+        assertThrows(LengthException.class, () -> isbnValidator.validate("9781917068"));
     }
 
     @Test
     public void shouldIsbnInvalidTooLong() {
         ISBNValidator isbnValidator = new ISBNValidator();
 
-        boolean result = isbnValidator.validate("97819170672888");
+        assertThrows(LengthException.class, () -> isbnValidator.validate("97819170672888"));
+    }
 
-        assertFalse(result);
+    @Test
+    public void shouldIsbnInvalidWithLetters() {
+        ISBNValidator isbnValidator = new ISBNValidator();
+
+        assertThrows(FormatException.class, () -> isbnValidator.validate("978191706728a"));
     }
 }
