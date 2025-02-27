@@ -1,7 +1,7 @@
 package com.vd.tp.validator;
 
-import com.vd.tp.exception.FormatException;
-import com.vd.tp.exception.LengthException;
+import com.vd.tp.exception.isbn.FormatException;
+import com.vd.tp.exception.isbn.LengthException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
