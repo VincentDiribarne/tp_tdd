@@ -1,6 +1,7 @@
 package com.vd.tp.service;
 
 import com.vd.tp.exception.service.MissingFieldsException;
+import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Book;
 import com.vd.tp.model.Member;
 import com.vd.tp.model.Reservation;
@@ -137,4 +138,21 @@ public class ReservationServiceTest {
 
         verify(repository, times(1)).save(reservation);
     }
+
+    @Test
+    public void shouldNotCloseReservationIDNotFound() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(false);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.closeReservation(reservation));
+
+        verify(repository, times(0)).save(reservation);
+    }
+
+
 }

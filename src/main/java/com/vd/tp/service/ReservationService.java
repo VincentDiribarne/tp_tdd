@@ -1,6 +1,7 @@
 package com.vd.tp.service;
 
 import com.vd.tp.exception.service.MissingFieldsException;
+import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Reservation;
 import com.vd.tp.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ public class ReservationService {
     }
 
     public Reservation closeReservation(Reservation reservation) {
-        //if (repository.existsById(reservation.getId())) throw new MissingFieldsException("Reservation does not exist");
+        if (repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
 
         reservation.setClosed(true);
 
