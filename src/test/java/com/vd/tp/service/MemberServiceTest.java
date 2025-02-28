@@ -212,11 +212,31 @@ public class MemberServiceTest {
             return memberSaved;
         });
 
+        when(reservationRepository.save(any(Reservation.class))).thenAnswer(invocation -> {
+            Reservation savedReservation = invocation.getArgument(0);
+            savedReservation.setId(UUID.randomUUID().toString());
+            return savedReservation;
+        });
+
         Member memberSaved = service.addReservation(member, reservation);
 
         //Assert
         assertNotNull(memberSaved);
         assertEquals(1, memberSaved.getReservations().size());
         assertEquals(LocalDate.now(), memberSaved.getReservations().getFirst().getReservationDate());
+    }
+
+    @Test
+    public void shouldNotAddReservationBecauseMemberNotFound() {
+        //Given
+        Member member = new Member();
+        member.setEmail("vdiribarne@gmail.com");
+        member.setMemberCode("1234");
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+
     }
 }

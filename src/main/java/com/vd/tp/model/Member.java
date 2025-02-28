@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,5 +28,5 @@ public class Member extends PersistentEntity {
     private Civility civility;
 
     @OneToMany
-    private List<Reservation> reservations;
+    private List<Reservation> reservations = new ArrayList<>();
 }

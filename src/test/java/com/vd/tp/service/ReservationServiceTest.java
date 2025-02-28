@@ -99,6 +99,19 @@ public class ReservationServiceTest {
     }
 
     @Test
+    public void shouldNotAddReservationBecauseBookNotFound() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(null);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.addReservation(reservation));
+
+        verify(repository, times(0)).save(reservation);
+    }
+
+    @Test
     public void shouldCalculateReservationDueDate() {
         //Given
         Reservation reservation = new Reservation();

@@ -20,6 +20,8 @@ public class ReservationService {
     public Reservation addReservation(Reservation reservation) {
         if (reservation.getReservationDate() == null) throw new MissingFieldsException("Reservation date is required");
 
+        if (reservation.getBook() == null) throw new NotFoundException("Book not found");
+
         calculateDueDate(reservation);
 
         return saveReservation(reservation);

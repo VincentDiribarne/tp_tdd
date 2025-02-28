@@ -3,6 +3,7 @@ package com.vd.tp.service;
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Member;
+import com.vd.tp.model.Reservation;
 import com.vd.tp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,5 +37,11 @@ public class MemberService {
         if (!repository.existsById(id)) throw new NotFoundException("Book with id " + id + " not found");
 
         repository.deleteById(id);
+    }
+
+    public Member addReservation(Member member, Reservation reservation) {
+        member.getReservations().add(service.addReservation(reservation));
+
+        return saveMember(member);
     }
 }
