@@ -8,10 +8,16 @@ import com.vd.tp.repository.ReservationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository repository;
+
+    public List<Reservation> findAllReservations() {
+        return repository.findAll();
+    }
 
     public Reservation saveReservation(Reservation reservation) {
         return repository.save(reservation);

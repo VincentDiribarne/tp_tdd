@@ -1,5 +1,6 @@
 package com.vd.tp.service;
 
+import com.vd.tp.exception.service.BadArgumentException;
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Book;
@@ -17,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +50,7 @@ public class MemberServiceTest {
         service = new MemberService(repository, reservationService);
     }
 
+    /* Save */
     @Test
     public void shouldSaveMember() {
         //Given
@@ -218,6 +222,8 @@ public class MemberServiceTest {
             return savedReservation;
         });
 
+        when(repository.existsById(any())).thenReturn(true);
+
         Member memberSaved = service.addReservation(member, reservation);
 
         //Assert
@@ -240,6 +246,29 @@ public class MemberServiceTest {
         //Assert
 
         assertThrows(NotFoundException.class, () -> service.addReservation(member, reservation));
+
+        verify(repository, never()).save(any(Member.class));
+    }
+
+    @Test
+    public void shouldNotAddReservationBecauseMoreThan3() {
+        // Given
+        Member member = new Member();
+        member.setEmail("vdiribarne@gmail.com");
+        member.setMemberCode("1234");
+        member.setReservations(new ArrayList<>(List.of(new Reservation(), new Reservation(), new Reservation())));
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        when(repository.existsById(any())).thenReturn(true);
+
+        MemberService spyService = spy(service);
+        when(spyService.tooManyReservations(member)).thenReturn(true);
+
+        //Assert
+        assertThrows(BadArgumentException.class, () -> spyService.addReservation(member, reservation));
 
         verify(repository, never()).save(any(Member.class));
     }

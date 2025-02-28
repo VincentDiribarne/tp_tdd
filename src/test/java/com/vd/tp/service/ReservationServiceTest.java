@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,12 +30,32 @@ public class ReservationServiceTest {
     @InjectMocks
     private ReservationService service;
 
-
-
     @BeforeEach
     public void setUp() {
         repository = mock(ReservationRepository.class);
         service = new ReservationService(repository);
+    }
+
+    @Test
+    public void shouldFindAllReservation() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        Reservation reservation1 = new Reservation();
+        reservation1.setReservationDate(LocalDate.now());
+        reservation1.setBook(new Book());
+
+        //When
+        when(repository.findAll()).thenReturn(List.of(reservation, reservation));
+
+        List<Reservation> reservations = service.findAllReservations();
+
+        //Then
+        assertEquals(2, reservations.size());
+        assertEquals(LocalDate.now(), reservations.getFirst().getReservationDate());
+        verify(repository, times(1)).findAll();
     }
 
     @Test

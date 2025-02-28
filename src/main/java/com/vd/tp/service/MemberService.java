@@ -1,5 +1,6 @@
 package com.vd.tp.service;
 
+import com.vd.tp.exception.service.BadArgumentException;
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Member;
@@ -42,8 +43,14 @@ public class MemberService {
     public Member addReservation(Member member, Reservation reservation) {
         if (!repository.existsById(member.getId())) throw new NotFoundException("Member not found");
 
+        if (tooManyReservations(member)) throw new BadArgumentException("Member has too many reservations");
+
         member.getReservations().add(service.addReservation(reservation));
 
         return saveMember(member);
+    }
+
+    public boolean tooManyReservations(Member member) {
+        return member.getReservations().size() > 3;
     }
 }
