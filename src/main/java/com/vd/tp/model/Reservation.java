@@ -1,6 +1,7 @@
 package com.vd.tp.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -13,4 +14,7 @@ import java.time.LocalDate;
 public class Reservation extends PersistentEntity {
     private LocalDate reservationDate;
     private LocalDate dueDate;
+
+    @ManyToOne
+    private Book book;
 }

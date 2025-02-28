@@ -2,12 +2,14 @@ package com.vd.tp.model;
 
 import com.vd.tp.model.enums.Civility;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Getter
@@ -23,4 +25,7 @@ public class Member extends PersistentEntity {
 
     private LocalDate birthDate;
     private Civility civility;
+
+    @OneToMany
+    private List<Reservation> books;
 }
