@@ -1,6 +1,7 @@
 package com.vd.tp.service;
 
 import com.vd.tp.exception.service.MissingFieldsException;
+import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Member;
 import com.vd.tp.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,13 @@ public class MemberService {
         if (member.getEmail() == null) throw new MissingFieldsException("Email is required");
 
         return saveMember(member);
+    }
+
+    public Member updateMember(String id, Member member) {
+        if (!repository.existsById(id)) throw new NotFoundException("Book with id " + id + " not found");
+
+        return addMember(member);
+
     }
 
     public Member saveMember(Member member) {
