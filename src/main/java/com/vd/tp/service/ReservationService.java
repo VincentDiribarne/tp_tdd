@@ -14,6 +14,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository repository;
+    private final MailService mailService;
+
+    public boolean existByID(String id) {
+        return repository.existsById(id);
+    }
 
     public List<Reservation> findAllReservations() {
         return repository.findAll();
@@ -51,5 +56,11 @@ public class ReservationService {
         if (!repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
 
         repository.deleteById(reservation.getId());
+    }
+
+    public void sendMailDueDate(Reservation reservation) {
+        if (!repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
+
+        mailService.sendMail("email");
     }
 }

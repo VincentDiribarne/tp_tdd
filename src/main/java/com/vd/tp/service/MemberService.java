@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 public class MemberService {
     private final MemberRepository repository;
     private final ReservationService service;
+    private final MailService mailService;
 
     public Member findMemberByCode(String code) {
         return repository.findMemberByMemberCode(code).orElseThrow(() -> new NotFoundException("Member with code " + code + " not found"));
@@ -55,5 +56,13 @@ public class MemberService {
 
     public boolean tooManyReservations(Member member) {
         return member.getReservations().stream().filter(r -> !r.isClosed()).toList().size() > 3;
+    }
+
+    public void sendMailToMember(Reservation reservation, Member member) {
+        if (!repository.existsById(member.getId())) throw new NotFoundException("Member not found");
+
+        if (!service.existByID(reservation.getId())) throw new NotFoundException("Reservation not found");
+
+        mailService.sendMail(member.getEmail());
     }
 }

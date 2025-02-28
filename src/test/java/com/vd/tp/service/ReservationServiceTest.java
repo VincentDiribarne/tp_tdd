@@ -27,13 +27,17 @@ public class ReservationServiceTest {
     @Mock
     private ReservationRepository repository;
 
+    @Mock
+    private MailService mailService;
+
     @InjectMocks
     private ReservationService service;
 
     @BeforeEach
     public void setUp() {
         repository = mock(ReservationRepository.class);
-        service = new ReservationService(repository);
+        mailService = mock(MailService.class);
+        service = new ReservationService(repository, mailService);
     }
 
     @Test
@@ -244,5 +248,35 @@ public class ReservationServiceTest {
         assertThrows(NotFoundException.class, () -> service.deleteReservation(reservation));
 
         verify(repository, never()).deleteById(reservation.getId());
+    }
+
+    @Test
+    public void shouldSendMail() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(true);
+
+        //Assert
+        service.sendMailDueDate(reservation);
+
+        verify(mailService, times(1)).sendMail(anyString());
+    }
+
+    @Test
+    public void shouldNotSendMailBecauseNotFound() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(false);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.sendMailDueDate(reservation));
+
+        verify(mailService, never()).sendMail(anyString());
     }
 }

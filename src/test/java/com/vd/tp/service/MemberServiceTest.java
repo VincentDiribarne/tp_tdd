@@ -36,6 +36,9 @@ public class MemberServiceTest {
     @Mock
     private ReservationRepository reservationRepository;
 
+    @Mock
+    private MailService mailService;
+
     @InjectMocks
     private MemberService service;
 
@@ -46,9 +49,10 @@ public class MemberServiceTest {
     public void setUp() {
         repository = mock(MemberRepository.class);
         reservationRepository = mock(ReservationRepository.class);
+        mailService = mock(MailService.class);
 
-        reservationService = new ReservationService(reservationRepository);
-        service = new MemberService(repository, reservationService);
+        reservationService = new ReservationService(reservationRepository, mailService);
+        service = new MemberService(repository, reservationService, mailService);
     }
 
     @Test
@@ -304,5 +308,69 @@ public class MemberServiceTest {
         assertThrows(BadArgumentException.class, () -> spyService.addReservation(member, reservation));
 
         verify(repository, never()).save(any(Member.class));
+    }
+
+    @Test
+    public void shouldSendMailMemberBecauseReservationDueDate() {
+        //Given
+        Member member = new Member();
+        member.setId(UUID.randomUUID().toString());
+        member.setEmail("vdiribarne@gmail.com");
+
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+        reservation.setDueDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //When
+        when(repository.existsById(anyString())).thenReturn(true);
+        when(reservationRepository.existsById(anyString())).thenReturn(true);
+
+        //Should
+        service.sendMailToMember(reservation, member);
+
+        //Assert
+        verify(mailService, times(1)).sendMail(anyString());
+    }
+
+    @Test
+    public void shouldNotSendMailBecauseMemberNotFound() {
+        //Given
+        Member member = new Member();
+        member.setId(UUID.randomUUID().toString());
+        member.setEmail("vdiribarne@gmail.com");
+
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+        reservation.setDueDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //When
+        when(repository.existsById(any())).thenReturn(false);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.sendMailToMember(reservation, member));
+        verify(mailService, never()).sendMail(anyString());
+    }
+
+    @Test
+    public void shouldNotSendMailBecauseReservationNotFound() {
+        //Given
+        Member member = new Member();
+        member.setId(UUID.randomUUID().toString());
+        member.setEmail("vdiribarne@gmail.com");
+
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+        reservation.setDueDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //When
+        when(repository.existsById(any())).thenReturn(true);
+        when(reservationRepository.existsById(any())).thenReturn(false);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.sendMailToMember(reservation, member));
+        verify(mailService, never()).sendMail(anyString());
     }
 }
