@@ -1,6 +1,8 @@
 package com.vd.tp.service;
 
+import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.model.Book;
+import com.vd.tp.model.Member;
 import com.vd.tp.model.Reservation;
 import com.vd.tp.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,9 +14,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @SpringBootTest
@@ -41,14 +43,99 @@ public class ReservationServiceTest {
         reservation.setBook(new Book());
 
         //When
-        service.saveReservation(reservation);
+        when(repository.save(any(Reservation.class))).thenAnswer(invocation -> {
+            Reservation savedReservation = invocation.getArgument(0);
+            savedReservation.setId(UUID.randomUUID().toString());
+            return savedReservation;
+        });
+
+        Reservation savedReservation = service.saveReservation(reservation);
 
         //Assert
-        assertNotNull(reservation);
-        assertNotNull(reservation.getId());
-        assertEquals(LocalDate.now(), reservation.getReservationDate());
+        assertNotNull(savedReservation);
+        assertNotNull(savedReservation.getId());
+        assertEquals(LocalDate.now(), savedReservation.getReservationDate());
 
         verify(repository, times(1)).save(reservation);
     }
 
+    @Test
+    public void shouldAddReservation() {
+        //Given
+        Reservation reservation = new Reservation();
+
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //When
+        when(repository.save(any(Reservation.class))).thenAnswer(invocation -> {
+            Reservation savedReservation = invocation.getArgument(0);
+            savedReservation.setId(UUID.randomUUID().toString());
+            return savedReservation;
+        });
+
+        Reservation savedReservation = service.addReservation(reservation);
+
+        //Assert
+        assertNotNull(savedReservation);
+        assertNotNull(savedReservation.getId());
+        assertEquals(LocalDate.now(), savedReservation.getReservationDate());
+
+        verify(repository, times(1)).save(reservation);
+    }
+
+    @Test
+    public void shouldNotAddReservationMissingData() {
+        //Given
+        Reservation reservation = new Reservation();
+
+        //Assert
+        assertThrows(MissingFieldsException.class, () -> service.addReservation(reservation));
+
+        verify(repository, times(0)).save(reservation);
+    }
+
+    @Test
+    public void shouldCalculateReservationDueDate() {
+        //Given
+        Reservation reservation = new Reservation();
+
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //When
+        when(repository.save(any(Reservation.class))).thenAnswer(invocation -> {
+            Reservation savedReservation = invocation.getArgument(0);
+            savedReservation.setId(UUID.randomUUID().toString());
+            return savedReservation;
+        });
+
+        Reservation savedReservation = service.addReservation(reservation);
+
+        //Assert
+        assertNotNull(savedReservation);
+        assertNotNull(savedReservation.getId());
+        assertEquals(LocalDate.now(), savedReservation.getReservationDate());
+        assertEquals(LocalDate.now().plusMonths(4), savedReservation.getDueDate());
+
+        verify(repository, times(1)).save(reservation);
+    }
+
+    @Test
+    public void shouldCloseReservation() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        Reservation savedReservation = service.closeReservation(reservation);
+
+        //Assert
+        assertNotNull(savedReservation);
+        assertNotNull(savedReservation.getId());
+        assertEquals(LocalDate.now(), savedReservation.getReservationDate());
+        assertNotNull(savedReservation.getReturnDate());
+
+        verify(repository, times(1)).save(reservation);
+    }
 }
