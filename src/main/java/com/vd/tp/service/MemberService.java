@@ -30,4 +30,10 @@ public class MemberService {
     public Member saveMember(Member member) {
         return repository.save(member);
     }
+
+    public void deleteById(String id) {
+        if (!repository.existsById(id)) throw new NotFoundException("Book with id " + id + " not found");
+
+        repository.deleteById(id);
+    }
 }

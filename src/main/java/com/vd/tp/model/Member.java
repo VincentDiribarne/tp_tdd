@@ -27,5 +27,5 @@ public class Member extends PersistentEntity {
     private Civility civility;
 
     @OneToMany
-    private List<Reservation> books;
+    private List<Reservation> reservations;
 }

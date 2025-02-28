@@ -2,10 +2,8 @@ package com.vd.tp.service;
 
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
-import com.vd.tp.model.Book;
 import com.vd.tp.model.Member;
 import com.vd.tp.model.enums.Civility;
-import com.vd.tp.model.enums.Format;
 import com.vd.tp.repository.MemberRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
