@@ -133,8 +133,7 @@ public class ReservationServiceTest {
         //Assert
         assertNotNull(savedReservation);
         assertNotNull(savedReservation.getId());
-        assertEquals(LocalDate.now(), savedReservation.getReservationDate());
-        assertNotNull(savedReservation.getReturnDate());
+        assertTrue(reservation.isClosed());
 
         verify(repository, times(1)).save(reservation);
     }

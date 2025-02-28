@@ -24,6 +24,8 @@ public class ReservationService {
     }
 
     public Reservation closeReservation(Reservation reservation) {
+        //if (repository.existsById(reservation.getId())) throw new MissingFieldsException("Reservation does not exist");
+
         reservation.setClosed(true);
 
         return saveReservation(reservation);
