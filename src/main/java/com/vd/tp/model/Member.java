@@ -17,6 +17,7 @@ import java.time.LocalDate;
 public class Member extends PersistentEntity {
     private String firstName;
     private String lastName;
+    private String email;
 
     private String memberCode;
 
