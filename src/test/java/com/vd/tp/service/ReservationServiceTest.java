@@ -1,9 +1,9 @@
 package com.vd.tp.service;
 
+import com.vd.tp.exception.service.BadArgumentException;
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Book;
-import com.vd.tp.model.Member;
 import com.vd.tp.model.Reservation;
 import com.vd.tp.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -129,6 +129,8 @@ public class ReservationServiceTest {
         reservation.setId(UUID.randomUUID().toString());
 
         //When
+        when(repository.existsById(reservation.getId())).thenReturn(true);
+
         Reservation savedReservation = service.closeReservation(reservation);
 
         //Assert
@@ -151,7 +153,23 @@ public class ReservationServiceTest {
         //Assert
         assertThrows(NotFoundException.class, () -> service.closeReservation(reservation));
 
-        verify(repository, times(0)).save(reservation);
+        verify(repository, never()).save(reservation);
+    }
+
+    @Test
+    public void shouldNotCloseReservationAlreadyClose() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+        reservation.setClosed(true);
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(true);
+
+        //Assert
+        assertThrows(BadArgumentException.class, () -> service.closeReservation(reservation));
+
+        verify(repository, never()).save(reservation);
     }
 
 

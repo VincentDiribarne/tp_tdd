@@ -1,5 +1,6 @@
 package com.vd.tp.service;
 
+import com.vd.tp.exception.service.BadArgumentException;
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
 import com.vd.tp.model.Reservation;
@@ -25,10 +26,12 @@ public class ReservationService {
     }
 
     public Reservation closeReservation(Reservation reservation) {
-        if (repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
+        if (!repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
+
+        if (reservation.isClosed()) throw new BadArgumentException("Reservation is already closed");
+
 
         reservation.setClosed(true);
-
         return saveReservation(reservation);
     }
 
