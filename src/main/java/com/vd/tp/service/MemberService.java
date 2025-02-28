@@ -40,6 +40,8 @@ public class MemberService {
     }
 
     public Member addReservation(Member member, Reservation reservation) {
+        if (!repository.existsById(member.getId())) throw new NotFoundException("Member not found");
+
         member.getReservations().add(service.addReservation(reservation));
 
         return saveMember(member);

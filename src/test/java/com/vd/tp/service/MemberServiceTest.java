@@ -237,6 +237,10 @@ public class MemberServiceTest {
         reservation.setReservationDate(LocalDate.now());
         reservation.setBook(new Book());
 
+        //Assert
 
+        assertThrows(NotFoundException.class, () -> service.addReservation(member, reservation));
+
+        verify(repository, never()).save(any(Member.class));
     }
 }
