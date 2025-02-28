@@ -38,4 +38,10 @@ public class ReservationService {
     private void calculateDueDate(Reservation reservation) {
         reservation.setDueDate(reservation.getReservationDate().plusMonths(4));
     }
+
+    public void deleteReservation(Reservation reservation) {
+        if (!repository.existsById(reservation.getId())) throw new NotFoundException("Reservation not found");
+
+        repository.deleteById(reservation.getId());
+    }
 }

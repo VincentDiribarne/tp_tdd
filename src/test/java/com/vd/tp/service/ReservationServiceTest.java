@@ -29,6 +29,8 @@ public class ReservationServiceTest {
     @InjectMocks
     private ReservationService service;
 
+
+
     @BeforeEach
     public void setUp() {
         repository = mock(ReservationRepository.class);
@@ -129,6 +131,13 @@ public class ReservationServiceTest {
         reservation.setId(UUID.randomUUID().toString());
 
         //When
+        when(repository.save(any(Reservation.class))).thenAnswer(invocation -> {
+            Reservation savedReservation = invocation.getArgument(0);
+            savedReservation.setId(UUID.randomUUID().toString());
+            return savedReservation;
+        });
+
+
         when(repository.existsById(reservation.getId())).thenReturn(true);
 
         Reservation savedReservation = service.closeReservation(reservation);
@@ -173,4 +182,33 @@ public class ReservationServiceTest {
     }
 
 
+    @Test
+    public void shouldDeleteReservation() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(true);
+
+        //Assert
+        service.deleteReservation(reservation);
+
+        verify(repository, times(1)).deleteById(reservation.getId());
+    }
+
+    @Test
+    public void shouldNotDeleteBecauseNotFound() {
+        //Given
+        Reservation reservation = new Reservation();
+        reservation.setId(UUID.randomUUID().toString());
+
+        //When
+        when(repository.existsById(reservation.getId())).thenReturn(false);
+
+        //Assert
+        assertThrows(NotFoundException.class, () -> service.deleteReservation(reservation));
+
+        verify(repository, never()).deleteById(reservation.getId());
+    }
 }

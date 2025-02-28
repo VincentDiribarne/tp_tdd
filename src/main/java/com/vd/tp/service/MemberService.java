@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository repository;
+    private final ReservationService service;
 
     public Member addMember(Member member) {
         if (member.getMemberCode() == null) throw new MissingFieldsException("Member code is required");

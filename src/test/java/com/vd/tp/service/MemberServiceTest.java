@@ -2,9 +2,12 @@ package com.vd.tp.service;
 
 import com.vd.tp.exception.service.MissingFieldsException;
 import com.vd.tp.exception.service.NotFoundException;
+import com.vd.tp.model.Book;
 import com.vd.tp.model.Member;
+import com.vd.tp.model.Reservation;
 import com.vd.tp.model.enums.Civility;
 import com.vd.tp.repository.MemberRepository;
+import com.vd.tp.repository.ReservationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,13 +29,22 @@ public class MemberServiceTest {
     @Mock
     private MemberRepository repository;
 
+    @Mock
+    private ReservationRepository reservationRepository;
+
     @InjectMocks
     private MemberService service;
+
+    @InjectMocks
+    private ReservationService reservationService;
 
     @BeforeEach
     public void setUp() {
         repository = mock(MemberRepository.class);
-        service = new MemberService(repository);
+        reservationRepository = mock(ReservationRepository.class);
+
+        reservationService = new ReservationService(reservationRepository);
+        service = new MemberService(repository, reservationService);
     }
 
     @Test
@@ -180,5 +192,31 @@ public class MemberServiceTest {
 
         verify(repository, times(1)).existsById(id);
         verify(repository, never()).deleteById(any());
+    }
+
+    @Test
+    public void shouldAddReservation() {
+        //Given
+        Member member = new Member();
+        member.setEmail("vdiribarne@gmail.com");
+        member.setMemberCode("12347547");
+
+        Reservation reservation = new Reservation();
+        reservation.setReservationDate(LocalDate.now());
+        reservation.setBook(new Book());
+
+        //Should
+        when(repository.save(any(Member.class))).thenAnswer(invocation -> {
+            Member memberSaved = invocation.getArgument(0);
+            memberSaved.setId(UUID.randomUUID().toString());
+            return memberSaved;
+        });
+
+        Member memberSaved = service.addReservation(member, reservation);
+
+        //Assert
+        assertNotNull(memberSaved);
+        assertEquals(1, memberSaved.getReservations().size());
+        assertEquals(LocalDate.now(), memberSaved.getReservations().getFirst().getReservationDate());
     }
 }
