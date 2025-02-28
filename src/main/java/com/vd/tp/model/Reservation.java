@@ -15,7 +15,7 @@ public class Reservation extends PersistentEntity {
     private LocalDate reservationDate;
     private LocalDate dueDate;
 
-    private boolean closed;
+    private boolean closed = false;
 
     @ManyToOne
     private Book book;

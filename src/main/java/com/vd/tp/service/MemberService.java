@@ -15,6 +15,10 @@ public class MemberService {
     private final MemberRepository repository;
     private final ReservationService service;
 
+    public Member findMemberByCode(String code) {
+        return repository.findMemberByMemberCode(code).orElseThrow(() -> new NotFoundException("Member with code " + code + " not found"));
+    }
+
     public Member addMember(Member member) {
         if (member.getMemberCode() == null) throw new MissingFieldsException("Member code is required");
 
@@ -46,11 +50,10 @@ public class MemberService {
         if (tooManyReservations(member)) throw new BadArgumentException("Member has too many reservations");
 
         member.getReservations().add(service.addReservation(reservation));
-
         return saveMember(member);
     }
 
     public boolean tooManyReservations(Member member) {
-        return member.getReservations().size() > 3;
+        return member.getReservations().stream().filter(r -> !r.isClosed()).toList().size() > 3;
     }
 }

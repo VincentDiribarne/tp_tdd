@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -48,6 +49,38 @@ public class MemberServiceTest {
 
         reservationService = new ReservationService(reservationRepository);
         service = new MemberService(repository, reservationService);
+    }
+
+    @Test
+    public void shouldFindAllReservationForAMember() {
+        //Given
+        Member member = new Member();
+        member.setEmail("vdiribarne@gmail.com");
+        member.setMemberCode("12347547");
+        member.setReservations(new ArrayList<>(List.of(new Reservation(), new Reservation(), new Reservation())));
+
+        //When
+        when(repository.findMemberByMemberCode(any())).thenReturn(Optional.of(member));
+
+        List<Reservation> reservations = service.findMemberByCode(member.getMemberCode()).getReservations();
+
+        //Then
+        assertEquals(3, reservations.size());
+        verify(repository, times(1)).findMemberByMemberCode(any());
+    }
+
+    @Test
+    public void shouldNotFindReservationForAMember() {
+        //Given
+        Member member = new Member();
+        member.setEmail("vdiribarne@gmail.com");
+        member.setMemberCode("12347547");
+
+        //When
+        when(repository.findMemberByMemberCode(anyString())).thenReturn(Optional.empty());
+
+        //Then
+        assertThrows(NotFoundException.class, () -> service.findMemberByCode(member.getMemberCode()));
     }
 
     /* Save */
